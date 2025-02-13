@@ -119,15 +119,15 @@ move_frog dec frg_del
           bne stick_r
           rts
 
-stick_l   lda obj1
+stick_l   lda frog_obj
           seq
-          dec obj1
+          dec frog_obj
           rts
 
-stick_r   lda obj1
-          cmp #38
+stick_r   lda frog_obj
+          cmp #37
           seq
-          inc obj1
+          inc frog_obj
           rts
 
 move_wasp dec wsp_del
@@ -136,18 +136,29 @@ move_wasp dec wsp_del
           lda #4
           sta wsp_del
 
-          lda obj2
-          cmp obj1
+          lda wasp_obj
+          cmp frog_obj
           sne
           rts
-          scc
-          dec obj2
-          scs
-          inc obj2
 
-          cmp #37
+          bcs move_wasp_l
+          inc wasp_obj
+          lda #<wasp_r
+          sta wasp_obj+4
+          lda #>wasp_r
+          sta wasp_obj+5
+          jmp wasp_end
+
+move_wasp_l dec wasp_obj
+          lda #<wasp_l
+          sta wasp_obj+4
+          lda #>wasp_l
+          sta wasp_obj+5
+
+wasp_end  lda wasp_obj
+          cmp #38
           sne
-          dec obj2
+          dec wasp_obj
           rts
 
 // clean screen
@@ -256,16 +267,22 @@ dli       php
           lda vcount
           sta wsync
 
-          cmp #$0f
+          cmp #$07
           bne dlicol2
           lda #<colors1
           ldx #>colors1
           jmp setcolors
 
-dlicol2   cmp #$67
-          bne enddli
+dlicol2   cmp #$23 // one antic line = 4
+          bne dlicol3
           lda #<colors2
           ldx #>colors2
+          jmp setcolors
+
+dlicol3   cmp #$5f // one antic line = 4
+          bne enddli
+          lda #<colors3
+          ldx #>colors3
           jmp setcolors
 
 setcolors sta ldacolors+1
@@ -282,18 +299,20 @@ enddli    pla
           plp
           rti
 
-colors1   dta b($1c),b($00),b($76),b($34),b($0e)
-colors2   dta b($1c),b($00),b($76),b($b4),b($0e)
+colors1   dta b($00),b($0c),b($0a),b($26),b($0e)
+colors2   dta b($1c),b($00),b($76),b($34),b($0e)
+colors3   dta b($b4),b($c8),b($00),b($46),b($0e)
 
-dlist     dta b($70)     // 3*8=24 empty lines
+dlist     dta b($f0)     // 3*8=24 empty lines
           dta b($70)
-          dta b($f0)     // 8 empty lines + DLI
+          dta b($70)     // 8 empty lines + DLI
 
           dta b($44)     // antic 4 + LMS
 dlist_lms dta a(scrm)
           dta b($04)
           dta b($04)
           dta b($04)
+          dta b($84)
           dta b($04)
           dta b($04)
           dta b($04)
@@ -308,10 +327,9 @@ dlist_lms dta a(scrm)
           dta b($04)
           dta b($04)
           dta b($04)
+          dta b($84)    // antic 4 + DLI
           dta b($04)
           dta b($04)
-          dta b($04)
-          dta b($84)     // antic 4 + DLI
           dta b($04)
           dta b($04)
           dta b($70)
@@ -321,158 +339,67 @@ dlist_lms dta a(scrm)
 
           dta b($41),a(dlist) // JVB
 
-objects   dta b(2)
-          dta a(obj1)
-          dta a(obj2)
+objects   dta b(8)
+          dta a(frog_obj)
+          dta a(wasp_obj)
+          dta a(fly_1_obj)
+          dta a(fly_2_obj)
+          dta a(fly_3_obj)
+          dta a(fly_4_obj)
+          dta a(fly_5_obj)
+          dta a(fly_6_obj)
 
-obj1      dta b(0),b(22)      // x, y position
-          dta b(2),b(2)       // width, height
+frog_obj  dta b(0),b(21)      // x, y position
+          dta b(3),b(3)       // width, height
           dta a(frog)         // tiles
 
-obj2      dta b(0),b(10)       // x, y position
+wasp_obj  dta b(0),b(10)      // x, y position
           dta b(3),b(3)       // width, height
-          dta a(wasp)         // tiles
+          dta a(wasp_r)         // tiles
 
-frog      dta b($81),b($82)
-          dta b($83),b($84)
-          dta b($80),b($80)
+fly_1_obj dta b(0),b(0)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-wasp      dta b($05),b($06),b($87)
-          dta b($08),b($09),b($0a)
-          dta b($0b),b($0c),b($0d)
+fly_2_obj dta b(6),b(0)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-          org chrst
-          dta b(%00000000) // 00
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00110000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
+fly_3_obj dta b(12),b(0)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-          dta b(%00000000) // 01
-          dta b(%00000011)
-          dta b(%00001100)
-          dta b(%00001100)
-          dta b(%00001100)
-          dta b(%00000011)
-          dta b(%00000011)
-          dta b(%00000011)
+fly_4_obj dta b(3),b(2)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-          dta b(%00000000) // 02
-          dta b(%11000000)
-          dta b(%00110000)
-          dta b(%00110000)
-          dta b(%00110000)
-          dta b(%11000000)
-          dta b(%00000000)
-          dta b(%00000000)
+fly_5_obj dta b(9),b(2)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-          dta b(%00001111) // 03
-          dta b(%00110011)
-          dta b(%00000011)
-          dta b(%00000011)
-          dta b(%00000011)
-          dta b(%00001100)
-          dta b(%00110000)
-          dta b(%11000000)
+fly_6_obj dta b(15),b(2)
+          dta b(3),b(1)
+          dta a(fly_l_1)
 
-          dta b(%11000000) // 04
-          dta b(%00110000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%11000000)
-          dta b(%00110000)
-          dta b(%00001100)
+frog      dta b($01),b($02),b($03)
+          dta b($04),b($05),b($06)
+          dta b($07),b($08),b($09)
 
-          // wasp
-          // 00 - white
-          // 01 - yellow
-          // 10 - black
-          // 11 - blue
-          // 11 - (inverted) red
-          dta b(%10101010) // 05
-          dta b(%10111011)
-          dta b(%10111011)
-          dta b(%10111011)
-          dta b(%10101011)
-          dta b(%10101011)
-          dta b(%00101010)
-          dta b(%00101010)
-          
-          dta b(%10000000) // 06
-          dta b(%10000010)
-          dta b(%10000010)
-          dta b(%10000010)
-          dta b(%10000010)
-          dta b(%10000010)
-          dta b(%10101010)
-          dta b(%10100110)
+wasp_l    dta b($2c),b($2b),b($2a)
+          dta b($2f),b($2e),b($2d)
+          dta b($00),b($31),b($30)
 
-          dta b(%10101000) // 07
-          dta b(%01010110)
-          dta b(%10011010)
-          dta b(%01010110)
-          dta b(%11110110)
-          dta b(%11110110)
-          dta b(%01011000)
-          dta b(%01011000)
+wasp_r    dta b($0a),b($0b),b($0c)
+          dta b($0d),b($0e),b($0f)
+          dta b($10),b($11),b($00)
 
-          dta b(%00001010) // 08
-          dta b(%00001010)
-          dta b(%00101010)
-          dta b(%00100110)
-          dta b(%00100110)
-          dta b(%10010110)
-          dta b(%10010110)
-          dta b(%00100110)
-
-          dta b(%01100110) // 09
-          dta b(%01100110)
-          dta b(%01100110)
-          dta b(%01100110)
-          dta b(%01100110)
-          dta b(%01100110)
-          dta b(%01101000)
-          dta b(%01100000)
-
-          dta b(%10100000) // 0a
-          dta b(%10000000)
-          dta b(%10000000)
-          dta b(%10000000)
-          dta b(%10000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-
-          dta b(%00100110) // 0b
-          dta b(%00101010)
-          dta b(%00100000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-
-          dta b(%10100000) // 0c
-          dta b(%00100000)
-          dta b(%00100000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-
-          dta b(%00000000) // 0d
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
-          dta b(%00000000)
+fly_l_1   dta b($14),b($95),b($16)
+fly_l_2   dta b($17),b($95),b($18)
+fly_r_1   dta b($14),b($99),b($16)
+fly_r_2   dta b($17),b($99),b($18)
 
           org $2e0
           dta a(init)
+
+          org chrst
+          ins "tiles.fnt"
