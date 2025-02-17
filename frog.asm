@@ -24,6 +24,7 @@ hposm1    equ $d005
 hposm2    equ $d006
 hposm3    equ $d007
 sizem     equ $d00c
+trig0     equ $d010
 colpf0    equ $d016
 colpf1    equ $d017
 colpf2    equ $d018
@@ -43,6 +44,18 @@ scr_buf_2 equ $4400
 pm_buf    equ $8000
 chrst     equ $8400
 
+objects_c equ 11
+flies_c   equ 9
+
+scr_minx  equ 10
+scr_maxx  equ 30
+
+flies1_posy equ 0
+flies2_posy equ 2
+flies3_posy equ 4
+wasp_posy equ 8
+frog_posy equ 21
+
 missl_buf equ pm_buf+$300
 
           org program
@@ -52,6 +65,9 @@ scr_buf   dta a(scr_buf_1)
 frg_del   dta b(1)
 wsp_del   dta b(1)
 fly_del   dta b(1)
+
+tngue_act dta b(0)
+tngue_pos dta b(0)
 
 // init
 init      equ *
@@ -84,19 +100,15 @@ init      equ *
           lda #0
           sta colpm0s
 
-          lda #%00111111
-          ldx #$ff
-missl_loop sta missl_buf,x
-          dex
-          bne missl_loop
-
 // main loop
 forever   jsr swap_scr
+          jsr init_tng
           jsr move_frog
           jsr move_wasp
           jsr move_flies
           jsr clean
           jsr draw_obj
+          jsr draw_tng
           jsr wait_vblank
 
           jmp forever
@@ -109,13 +121,13 @@ swap_scr  lda #>scr_buf_1 // switch screen buffer
           sta scr_buf+1
 
 // draw objects
-draw_obj  lda objects
+draw_obj  lda #objects_c
           sta $92          // all objects
           lda #0
           sta $93          // current object
-          lda #<(objects+1)
+          lda #<(objects)
           sta $94
-          lda #>(objects+1)
+          lda #>(objects)
           sta $95
 draw_obj_loop lda $93
           cmp $92
@@ -147,6 +159,10 @@ move_frog dec frg_del
           lda #2
           sta frg_del
 
+          lda tngue_act
+          seq
+          rts
+
           lda porta
           and #$0f
           eor #$ff
@@ -160,12 +176,13 @@ move_frog dec frg_del
           rts
 
 stick_l   lda frog_obj
+          cmp #scr_minx
           seq
           dec frog_obj
           rts
 
 stick_r   lda frog_obj
-          cmp #37
+          cmp #scr_maxx-3
           seq
           inc frog_obj
           rts
@@ -197,7 +214,7 @@ move_wasp_l dec wasp_obj
           sta wasp_obj+5
 
 wasp_end  lda wasp_obj
-          cmp #38
+          cmp #scr_maxx-2
           sne
           dec wasp_obj
           rts
@@ -209,7 +226,7 @@ move_flies dec fly_del
           lda #3
           sta fly_del
 
-          lda #6
+          lda #flies_c
           sta $92          // all flies
           lda #0
           sta $93          // current fly
@@ -237,9 +254,10 @@ flies_loop lda $93
 // (x,y) - fly address
 move_fly  stx $80
           sty $81
-          ldy #$6      // flag offset
-          lda ($80),y
-          and #1       // bit 0: right(0)/left(1)
+          ldx #2
+          jsr set_flag
+          ldx #1
+          jsr get_flag
           beq move_fly_r
 
 move_fly_l ldy #$0
@@ -248,8 +266,8 @@ move_fly_l ldy #$0
           dex
           txa
           sta ($80),y
-          //cmp #1
-          beq flip_flag
+          cmp #scr_minx
+          beq flip_fly
           rts
 
 move_fly_r ldy #$0
@@ -258,39 +276,66 @@ move_fly_r ldy #$0
           inx
           txa
           sta ($80),y
-          cmp #37
-          beq flip_flag
+          cmp #scr_maxx-3
+          beq flip_fly
           rts
 
-flip_flag ldy #$6      // xor bit 0 in flag
-          lda ($80),y
-          eor #1
-          sta ($80),y
+flip_fly  ldx #1
+          jsr flip_flag
           rts
 
 // clean screen
-clean     lda scr_buf
-          sta $80
+clean     equ *
           lda scr_buf+1
-          sta $81
-          ldx #0
+          cmp #>scr_buf_1
+          beq clean_1
 
-_clean_l1 lda #0
-          ldy #39
-_clean_l2 sta ($80),y
-          dey
-          bpl _clean_l2
-
-          clc
-          lda $80
-          adc #40
-          sta $80
-          scc
-          inc $81
-          inx
+clean_2   ldx #$00
           txa
-          cmp #24
-          bne _clean_l1
+clean_2_l equ *
+          sta scr_buf_2,x
+          sta scr_buf_2+$100,x
+          sta scr_buf_2+$200,x
+          sta scr_buf_2+$300,x
+          inx
+          bne clean_2_l
+          rts
+
+clean_1   ldx #$00
+          txa
+clean_1_l equ *
+          sta scr_buf_1,x
+          sta scr_buf_1+$100,x
+          sta scr_buf_1+$200,x
+          sta scr_buf_1+$300,x
+          inx
+          bne clean_1_l
+          rts
+
+// $80 - object
+// flag = flag | x
+set_flag  ldy #$6
+          lda ($80),y
+          stx *+4
+          ora #$ff
+          sta ($80),y
+          rts
+
+// $80 - object
+// flag = flag | x
+flip_flag ldy #$6
+          lda ($80),y
+          stx *+4
+          eor #$ff
+          sta ($80),y
+          rts
+
+// $80 - object
+// z = flag & x
+get_flag  ldy #$6
+          lda ($80),y
+          stx *+4
+          and #$ff
           rts
 
 // draw object in the screen memory
@@ -365,6 +410,50 @@ _draw_cpy_l lda ($86),y // copy ($86),y -> ($88),x
           jmp _draw_cpy_l
 
 _draw_finished rts
+
+init_tng  lda tngue_act
+          seq
+          rts
+
+          lda trig0
+          seq
+          rts
+
+          lda #1
+          sta tngue_act
+          ldx #$b0
+          stx tngue_pos
+          rts
+
+// draw tongue
+draw_tng  lda tngue_act
+          sne
+          rts
+
+          ldx tngue_pos
+          lda #0
+          sta missl_buf,x
+          dex
+          dex
+          dex
+          dex
+          beq stop_tng
+          stx tngue_pos
+          lda #%00111111
+          sta missl_buf,x
+
+          lda frog_obj
+          rol
+          rol
+          clc
+          adc #$32
+          sta hposm0
+          rts
+
+stop_tng  lda #0
+          sta tngue_pos
+          sta tngue_act
+          rts
 
 dli       php
           pha
@@ -445,8 +534,7 @@ dlist_lms dta a(scr_buf_1)
 
           dta b($41),a(dlist) // JVB
 
-objects   dta b(8)
-          dta a(frog_obj)
+objects   dta a(frog_obj)
           dta a(wasp_obj)
 flies     dta a(fly_1_obj)
           dta a(fly_2_obj)
@@ -454,46 +542,64 @@ flies     dta a(fly_1_obj)
           dta a(fly_4_obj)
           dta a(fly_5_obj)
           dta a(fly_6_obj)
+          dta a(fly_7_obj)
+          dta a(fly_8_obj)
+          dta a(fly_9_obj)
 
-frog_obj  dta b(0),b(21)      // x, y position
+frog_obj  dta b(scr_minx),b(frog_posy) // x, y position
           dta b(3),b(3)       // width, height
           dta a(frog)         // tiles
-          dta b(0)            // flags
+          dta b(2)            // flags
 
-wasp_obj  dta b(0),b(10)      // x, y position
+wasp_obj  dta b(scr_minx),b(wasp_posy)      // x, y position
           dta b(3),b(3)       // width, height
           dta a(wasp_r)       // tiles
-          dta b(0)            // flags
+          dta b(2)            // flags
 
-fly_1_obj dta b(0),b(0)
+fly_1_obj dta b(scr_minx),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
 
-fly_2_obj dta b(6),b(0)
+fly_2_obj dta b(scr_minx+5),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
 
-fly_3_obj dta b(12),b(0)
+fly_3_obj dta b(scr_minx+10),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
 
-fly_4_obj dta b(3),b(2)
+fly_4_obj dta b(scr_minx+2),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
 
-fly_5_obj dta b(9),b(2)
+fly_5_obj dta b(scr_minx+7),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
 
-fly_6_obj dta b(15),b(2)
+fly_6_obj dta b(scr_minx+12),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(0)
+          dta b(2)
+
+fly_7_obj dta b(scr_minx+5),b(flies3_posy)
+          dta b(3),b(1)
+          dta a(fly_l_1)
+          dta b(2)
+
+fly_8_obj dta b(scr_minx+10),b(flies3_posy)
+          dta b(3),b(1)
+          dta a(fly_l_1)
+          dta b(2)
+
+fly_9_obj dta b(scr_minx+15),b(flies3_posy)
+          dta b(3),b(1)
+          dta a(fly_l_1)
+          dta b(2)
 
 frog      dta b($01),b($02),b($03)
           dta b($04),b($05),b($06)
