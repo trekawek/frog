@@ -15,6 +15,7 @@ colpf2s   equ $02c6
 colpf3s   equ $02c7
 colbaks   equ $02c8
 
+m0pf      equ $d000
 hposp0    equ $d000
 hposp1    equ $d001
 hposp2    equ $d002
@@ -31,6 +32,7 @@ colpf2    equ $d018
 colpf3    equ $d019
 colbak    equ $d01a
 pmctl     equ $d01d
+hitclr    equ $d01e
 
 porta     equ $d300
 pmbase    equ $d407
@@ -47,8 +49,8 @@ chrst     equ $8400
 objects_c equ 11
 flies_c   equ 9
 
-scr_minx  equ 10
-scr_maxx  equ 30
+scr_minx  equ 0
+scr_maxx  equ 40
 
 flies1_posy equ 0
 flies2_posy equ 2
@@ -68,6 +70,7 @@ fly_del   dta b(1)
 
 tngue_act dta b(0)
 tngue_pos dta b(0)
+tngue_char_pos dta b(0)
 
 // init
 init      equ *
@@ -102,6 +105,7 @@ init      equ *
 
 // main loop
 forever   jsr swap_scr
+          jsr detect_coll
           jsr init_tng
           jsr move_frog
           jsr move_wasp
@@ -191,7 +195,7 @@ stick_r   lda frog_obj
 move_wasp dec wsp_del
           seq
           rts
-          lda #4
+          lda #6
           sta wsp_del
 
           lda wasp_obj
@@ -254,8 +258,6 @@ flies_loop lda $93
 // (x,y) - fly address
 move_fly  stx $80
           sty $81
-          ldx #2
-          jsr set_flag
           ldx #1
           jsr get_flag
           beq move_fly_r
@@ -351,6 +353,11 @@ get_flag  ldy #$6
 draw      stx $80
           sty $81
 
+          ldx #2       // skip hidden objects
+          jsr get_flag
+          seq
+          rts
+
           ldy #6 // copy object attributes to zero page
 _draw_lp  lda ($80),y
           sta $82,y
@@ -421,7 +428,7 @@ init_tng  lda tngue_act
 
           lda #1
           sta tngue_act
-          ldx #$b0
+          ldx #$c8
           stx tngue_pos
           rts
 
@@ -450,9 +457,108 @@ draw_tng  lda tngue_act
           sta hposm0
           rts
 
-stop_tng  lda #0
+stop_tng  ldx tngue_pos
+          lda #0
+          sta missl_buf,x
           sta tngue_pos
           sta tngue_act
+          rts
+
+detect_coll equ *
+          lda tngue_act  // skip if there's no tongue
+          sne
+          rts
+          lda m0pf       // skip if no collision
+          sne
+          rts
+
+          lda tngue_pos
+          lsr
+          lsr
+          lsr
+          lsr
+          and #%00001111
+          sec
+          sbc #2
+          asl
+          sta tngue_char_pos // store missle y-position in chars
+
+          lda #1
+          sta hitclr     // clear hit
+
+          lda #flies_c   // find collision
+          sta $92        // all objects
+          lda #0
+          sta $93        // current object
+          lda #<(flies)
+          sta $90
+          lda #>(flies)
+          sta $91
+detect_fly lda $93
+          cmp $92
+          sne
+          jmp stop_tng
+          ldy #0
+          lda ($90),y
+          sta $80
+          iny
+          lda ($90),y
+          sta $81
+          jsr is_obj_collision
+          beq found_fly
+
+          lda $90
+          clc
+          adc #2
+          sta $90
+          scc
+          inc $91
+          inc $93
+          jmp detect_fly
+
+found_fly ldx #2
+          jsr set_flag
+          jmp stop_tng
+
+// check if object with ($80) address collides with missile
+//   $80, $81 - obj address
+//   $82, $83 - position on screen
+//   $84, $85 - width, height
+//   $90 - missile height
+is_obj_collision equ *
+          ldy #4 // copy object attributes to zero page
+_obj_coll_lp lda ($80),y
+          sta $82,y
+          dey
+          bpl _obj_coll_lp
+
+          ldx frog_obj // check x position of the missile == frog+1
+          inx
+          txa
+          cmp $82  // missle < obj -> return
+          spl
+          jmp rts_false
+
+          sec
+          sbc $84  // missle > obj + width <=> missile - width > obj -> return
+          cmp $82
+          smi
+          rts
+
+          lda tngue_char_pos // check y position of the missile
+          cmp $83  // missile < obj
+          spl
+          jmp rts_false
+
+          sbc $85
+          cmp $83
+          smi
+          jmp rts_false
+
+rts_true  lda #0
+          rts
+
+rts_false lda #1
           rts
 
 dli       php
@@ -549,57 +655,57 @@ flies     dta a(fly_1_obj)
 frog_obj  dta b(scr_minx),b(frog_posy) // x, y position
           dta b(3),b(3)       // width, height
           dta a(frog)         // tiles
-          dta b(2)            // flags
+          dta b(0)            // flags
 
 wasp_obj  dta b(scr_minx),b(wasp_posy)      // x, y position
           dta b(3),b(3)       // width, height
           dta a(wasp_r)       // tiles
-          dta b(2)            // flags
+          dta b(0)            // flags
 
 fly_1_obj dta b(scr_minx),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)            // bit 0 - direction, bit 1 - hidden
 
 fly_2_obj dta b(scr_minx+5),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_3_obj dta b(scr_minx+10),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_4_obj dta b(scr_minx+2),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_5_obj dta b(scr_minx+7),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_6_obj dta b(scr_minx+12),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_7_obj dta b(scr_minx+5),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_8_obj dta b(scr_minx+10),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 fly_9_obj dta b(scr_minx+15),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
-          dta b(2)
+          dta b(0)
 
 frog      dta b($01),b($02),b($03)
           dta b($04),b($05),b($06)
