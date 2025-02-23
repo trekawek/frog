@@ -4,6 +4,7 @@ countr    equ $007e
 dliv      equ $0200
 dmactls   equ $022f
 sdlst     equ $0230
+gtiactls  equ $026f
 colpm0s   equ $02c0
 colpm1s   equ $02c1
 colpm2s   equ $02c2
@@ -41,10 +42,11 @@ vcount    equ $d40b
 nmien     equ $d40e
 
 program   equ $3800
-scr_buf_1 equ $4000
-scr_buf_2 equ $4400
+dlist     equ $4000
+scr_buf_1 equ $4200
+scr_buf_2 equ $4600
 pm_buf    equ $8000
-chrst     equ $8400
+chrst     equ $9000
 
 objects_c equ 11
 flies_c   equ 9
@@ -59,6 +61,8 @@ wasp_posy equ 8
 frog_posy equ 21
 
 missl_buf equ pm_buf+$300
+player0_buf equ pm_buf+$400
+player1_buf equ pm_buf+$500
 
           org program
           jmp init
@@ -68,7 +72,7 @@ frg_del   dta b(1)
 wsp_del   dta b(1)
 fly_del   dta b(1)
 
-tngue_act dta b(0)
+tngue_act dta b(0)       // 0 - not active, 1 - going up, 2 - going down
 tngue_pos dta b(0)
 tngue_char_pos dta b(0)
 
@@ -98,10 +102,15 @@ init      equ *
           lda #>pm_buf
           sta pmbase
 
+          lda #%00000100 // PF3, PF2, PF1, PF0, PM0, PM1, PM2, PM3, BAK
+
           lda #50
           sta hposm0
-          lda #0
+          sta hposp1
+          lda #$34
           sta colpm0s
+          lda #$34
+          sta colpm1s
 
 // main loop
 forever   jsr swap_scr
@@ -434,8 +443,31 @@ init_tng  lda tngue_act
 
 // draw tongue
 draw_tng  lda tngue_act
-          sne
+          cmp #1
+          beq draw_tng_up
+          cmp #2
+          beq draw_tng_down
           rts
+
+draw_tng_up equ *
+          ldx tngue_pos
+          txa
+          and #%111     // mod 8
+          tay
+          lda tongue_shape,y
+          sta player1_buf,x
+          iny
+          dex
+          lda tongue_shape,y
+          sta player1_buf,x
+          iny
+          dex
+          lda tongue_shape,y
+          sta player1_buf,x
+          iny
+          dex
+          lda tongue_shape,y
+          sta player1_buf,x
 
           ldx tngue_pos
           lda #0
@@ -444,8 +476,10 @@ draw_tng  lda tngue_act
           dex
           dex
           dex
-          beq stop_tng
           stx tngue_pos
+          txa
+          cmp #16
+          beq tng_act_down
           lda #%00111111
           sta missl_buf,x
 
@@ -455,18 +489,48 @@ draw_tng  lda tngue_act
           clc
           adc #$32
           sta hposm0
+          sec
+          sbc #2
+          sta hposp1
           rts
 
-stop_tng  ldx tngue_pos
+draw_tng_down equ *
+          ldx tngue_pos
           lda #0
+          sta player1_buf,x
           sta missl_buf,x
-          sta tngue_pos
+          inx
+          sta player1_buf,x
+          inx
+          sta player1_buf,x
+          inx
+          sta player1_buf,x
+          inx
+          sta player1_buf,x
+          stx tngue_pos
+          txa
+          cmp #$c8
+          beq tng_act_stop
+          lda #%00111111
+          sta missl_buf,x
+          rts
+
+tng_act_stop lda #0
+          sta tngue_act
+          rts
+
+tng_act_down  lda #2
           sta tngue_act
           rts
 
 detect_coll equ *
           lda tngue_act  // skip if there's no tongue
+          and #1
           sne
+          rts
+          lda tngue_pos
+          cmp #$c8
+          smi
           rts
           lda m0pf       // skip if no collision
           sne
@@ -497,7 +561,7 @@ detect_coll equ *
 detect_fly lda $93
           cmp $92
           sne
-          jmp stop_tng
+          jmp tng_act_down
           ldy #0
           lda ($90),y
           sta $80
@@ -518,7 +582,7 @@ detect_fly lda $93
 
 found_fly ldx #2
           jsr set_flag
-          jmp stop_tng
+          jmp tng_act_down
 
 // check if object with ($80) address collides with missile
 //   $80, $81 - obj address
@@ -604,42 +668,6 @@ colors1   dta b($00),b($0c),b($0a),b($26),b($0e)
 colors2   dta b($1c),b($00),b($76),b($34),b($0e)
 colors3   dta b($b4),b($c8),b($00),b($46),b($0e)
 
-dlist     dta b($f0)     // 3*8=24 empty lines
-          dta b($70)
-          dta b($70)     // 8 empty lines + DLI
-
-          dta b($44)     // antic 4 + LMS
-dlist_lms dta a(scr_buf_1)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($84)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($84)    // antic 4 + DLI
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($04)
-          dta b($70)
-          dta b($70)
-          dta b($70)
-          dta b($70)
-
-          dta b($41),a(dlist) // JVB
-
 objects   dta a(frog_obj)
           dta a(wasp_obj)
 flies     dta a(fly_1_obj)
@@ -723,6 +751,54 @@ fly_l_1   dta b($14),b($95),b($16)
 fly_l_2   dta b($17),b($95),b($18)
 fly_r_1   dta b($14),b($99),b($16)
 fly_r_2   dta b($17),b($99),b($18)
+
+tongue_shape equ *
+          dta b(%00011000)
+          dta b(%00010000)
+          dta b(%0001100)
+          dta b(%00001000)
+          dta b(%00011000)
+          dta b(%00010000)
+          dta b(%00011000)
+          dta b(%00001000)
+
+// display list
+          org dlist
+          dta b($f0)     // 3*8=24 empty lines
+          dta b($70)
+          dta b($70)     // 8 empty lines + DLI
+
+          dta b($44)     // antic 4 + LMS
+dlist_lms dta a(scr_buf_1)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($84)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($84)    // antic 4 + DLI
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($04)
+          dta b($70)
+          dta b($70)
+          dta b($70)
+          dta b($70)
+
+          dta b($41),a(dlist) // JVB
 
           org $2e0
           dta a(init)
