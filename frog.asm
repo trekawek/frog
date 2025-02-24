@@ -51,8 +51,8 @@ chrst     equ $9000
 objects_c equ 11
 flies_c   equ 9
 
-scr_minx  equ 0
-scr_maxx  equ 40
+scr_minx  equ 5
+scr_maxx  equ 35
 
 flies1_posy equ 0
 flies2_posy equ 2
@@ -107,7 +107,7 @@ init      equ *
           lda #50
           sta hposm0
           sta hposp1
-          lda #$34
+          lda #$38
           sta colpm0s
           lda #$34
           sta colpm1s
@@ -524,16 +524,15 @@ tng_act_down  lda #2
           rts
 
 detect_coll equ *
-          lda tngue_act  // skip if there's no tongue
-          and #1
-          sne
-          rts
-          lda tngue_pos
-          cmp #$c8
-          smi
-          rts
           lda m0pf       // skip if no collision
           sne
+          rts
+          lda #1
+          sta hitclr     // clear hit
+
+          lda tngue_act  // skip if there's no tongue
+          cmp #1
+          seq
           rts
 
           lda tngue_pos
@@ -546,9 +545,6 @@ detect_coll equ *
           sbc #2
           asl
           sta tngue_char_pos // store missle y-position in chars
-
-          lda #1
-          sta hitclr     // clear hit
 
           lda #flies_c   // find collision
           sta $92        // all objects
@@ -590,6 +586,10 @@ found_fly ldx #2
 //   $84, $85 - width, height
 //   $90 - missile height
 is_obj_collision equ *
+          ldx #2       // skip hidden objects
+          jsr get_flag
+          bne rts_false
+
           ldy #4 // copy object attributes to zero page
 _obj_coll_lp lda ($80),y
           sta $82,y
@@ -747,10 +747,10 @@ wasp_r    dta b($0a),b($0b),b($0c)
           dta b($0d),b($0e),b($0f)
           dta b($10),b($11),b($00)
 
-fly_l_1   dta b($14),b($95),b($16)
-fly_l_2   dta b($17),b($95),b($18)
-fly_r_1   dta b($14),b($99),b($16)
-fly_r_2   dta b($17),b($99),b($18)
+fly_l_1   dta b($15),b($96),b($17) // 14
+fly_l_2   dta b($18),b($96),b($19) // 17
+fly_r_1   dta b($15),b($9a),b($17) // 14
+fly_r_2   dta b($18),b($9a),b($19) // 17
 
 tongue_shape equ *
           dta b(%00011000)
