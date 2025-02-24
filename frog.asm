@@ -22,6 +22,7 @@ hposp1    equ $d001
 hposp2    equ $d002
 hposp3    equ $d003
 hposm0    equ $d004
+p1pf      equ $d005
 hposm1    equ $d005
 hposm2    equ $d006
 hposm3    equ $d007
@@ -524,7 +525,7 @@ tng_act_down  lda #2
           rts
 
 detect_coll equ *
-          lda m0pf       // skip if no collision
+          lda p1pf       // skip if no collision
           sne
           rts
           lda #1
@@ -607,7 +608,7 @@ _obj_coll_lp lda ($80),y
           sbc $84  // missle > obj + width <=> missile - width > obj -> return
           cmp $82
           smi
-          rts
+          jmp rts_false
 
           lda tngue_char_pos // check y position of the missile
           cmp $83  // missile < obj
