@@ -34,4 +34,4 @@ wasp_end  lda wasp_obj
           cmp #scr_maxx-2
           sne
           dec wasp_obj
-          jsr avoid_tng
+          jmp avoid_tng

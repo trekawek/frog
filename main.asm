@@ -20,8 +20,6 @@ init      jsr init_scr
 
 // main loop
 forever   jsr swap_scr
-          // FIXME - why is it needed?
-          jsr draw_obj
           jsr detect_coll
           jsr init_tng
           jsr move_frog
@@ -36,11 +34,10 @@ forever   jsr swap_scr
 
           icl 'data.asm'
           icl 'dli.asm'
+          icl 'fly.asm'
           icl 'frog.asm'
           icl 'object.asm'
           icl 'screen.asm'
           icl 'state.asm'
           icl 'tongue.asm'
-          // FIXME - why does it crash if we put these files in different order?
           icl 'wasp.asm'
-          icl 'fly.asm'

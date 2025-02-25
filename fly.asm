@@ -1,4 +1,3 @@
-
 // move flies
 move_flies dec fly_del
           seq
