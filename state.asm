@@ -5,4 +5,4 @@ fly_del   dta b(1)
 
 tngue_act dta b(0)       // 0 - not active, 1 - going up, 2 - going down
 tngue_pos dta b(0)
-tngue_char_pos dta b(0)
+tngue_char_pos dta b(frog_posy)

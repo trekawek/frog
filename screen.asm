@@ -41,7 +41,7 @@ swap_scr  lda #>scr_buf_1 // switch screen buffer
           sne
           lda #>scr_buf_2
           sta scr_buf+1
-          // FIXME - why it breaks with rts?
+          rts
 
 // draw objects
 draw_obj  lda #objects_c
