@@ -438,7 +438,7 @@ init_tng  lda tngue_act
 
           lda #1
           sta tngue_act
-          ldx #$c8
+          ldx #$d0
           stx tngue_pos
           rts
 
@@ -488,10 +488,10 @@ draw_tng_up equ *
           rol
           rol
           clc
-          adc #$32
+          adc #$33
           sta hposm0
           sec
-          sbc #2
+          sbc #3
           sta hposp1
           rts
 
@@ -510,7 +510,7 @@ draw_tng_down equ *
           sta player1_buf,x
           stx tngue_pos
           txa
-          cmp #$c8
+          cmp #$d0
           beq tng_act_stop
           lda #%00111111
           sta missl_buf,x
@@ -525,7 +525,7 @@ tng_act_down  lda #2
           rts
 
 detect_coll equ *
-          lda p1pf       // skip if no collision
+          lda m0pf       // skip if no collision
           sne
           rts
           lda #1
@@ -535,16 +535,19 @@ detect_coll equ *
           cmp #1
           seq
           rts
-
-          lda tngue_pos  // 28-35 -> 0, 44-51 -> 2
-                        // tngue_char_pos = (tngue_pos - 28) / 8
+                          // 28-35 -> 0, 44-51 -> 2
+          lda tngue_pos   // tngue_char_pos = (tngue_pos - 28) / 8
           sec
           sbc #28
           lsr
           lsr
           lsr
-          and #%00001111
+          and #%00011111
           sta tngue_char_pos // store missle y-position in chars
+
+          cmp #wasp_posy+3   // ignore collisions below wasp
+          smi
+          rts
 
           lda #flies_c   // find collision
           sta $92        // all objects
