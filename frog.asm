@@ -536,15 +536,14 @@ detect_coll equ *
           seq
           rts
 
-          lda tngue_pos
-          lsr
+          lda tngue_pos  // 28-35 -> 0, 44-51 -> 2
+                        // tngue_char_pos = (tngue_pos - 28) / 8
+          sec
+          sbc #28
           lsr
           lsr
           lsr
           and #%00001111
-          sec
-          sbc #2
-          asl
           sta tngue_char_pos // store missle y-position in chars
 
           lda #flies_c   // find collision
