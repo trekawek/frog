@@ -123,6 +123,7 @@ forever   jsr swap_scr
           jsr clean
           jsr draw_obj
           jsr draw_tng
+          jsr update_tng_char_pos
           jsr wait_vblank
 
           jmp forever
@@ -213,6 +214,11 @@ move_wasp dec wsp_del
           sne
           rts
 
+          lda #<wasp_obj
+          sta $80
+          lda #>wasp_obj
+          sta $81
+
           bcs move_wasp_l
           inc wasp_obj
           lda #<wasp_r
@@ -231,7 +237,7 @@ wasp_end  lda wasp_obj
           cmp #scr_maxx-2
           sne
           dec wasp_obj
-          rts
+          jsr avoid_tng
 
 // move flies
 move_flies dec fly_del
@@ -261,6 +267,7 @@ flies_loop lda $93
           lda ($94),y
           tay
           jsr move_fly
+          jsr avoid_tng
           inc $93
           jmp flies_loop
           rts
@@ -294,6 +301,46 @@ move_fly_r ldy #$0
 
 flip_fly  ldx #1
           jsr flip_flag
+          rts
+
+avoid_tng equ *
+          lda tngue_act
+          sne
+          rts
+
+          lda tngue_char_pos
+          ldy #1
+          sec
+          sbc ($80),y  // - posy
+          ldy #3
+          sbc ($80),y  // - height
+          smi
+          rts
+
+          lda frog_obj
+          ldy #0
+          sec
+          sbc ($80),y
+          cmp #$01
+          beq avoid_tng_left
+          cmp #$ff // -1
+          beq avoid_tng_right
+          rts
+
+avoid_tng_left equ *
+          lda ($80),y
+          tax
+          dex
+          txa
+          sta ($80),y
+          rts
+
+avoid_tng_right equ *
+          lda ($80),y
+          tax
+          inx
+          txa
+          sta ($80),y
           rts
 
 // clean screen
@@ -524,6 +571,20 @@ tng_act_down  lda #2
           sta tngue_act
           rts
 
+update_tng_char_pos equ * // 28-35 -> 0, 44-51 -> 2
+                          // tngue_char_pos = (tngue_pos - 28) / 8
+          lda tngue_pos
+          sec
+          sbc #28
+          spl
+          rts
+          lsr
+          lsr
+          lsr
+          and #%00011111
+          sta tngue_char_pos // store missle y-position in chars
+          rts
+
 detect_coll equ *
           lda m0pf       // skip if no collision
           sne
@@ -535,16 +596,8 @@ detect_coll equ *
           cmp #1
           seq
           rts
-                          // 28-35 -> 0, 44-51 -> 2
-          lda tngue_pos   // tngue_char_pos = (tngue_pos - 28) / 8
-          sec
-          sbc #28
-          lsr
-          lsr
-          lsr
-          and #%00011111
-          sta tngue_char_pos // store missle y-position in chars
 
+          lda tngue_char_pos
           cmp #wasp_posy+3   // ignore collisions below wasp
           smi
           rts
