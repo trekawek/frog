@@ -17,6 +17,7 @@
 
 // init
 init      jsr init_scr
+          jsr init_game
 
 // main loop
 forever   jsr swap_scr
@@ -28,7 +29,10 @@ forever   jsr swap_scr
           jsr clean
           jsr draw_obj
           jsr draw_tng
+          jsr print_score
           jsr update_tng_char_pos
+          jsr is_next_level
+          jsr is_game_over
           jsr wait_vblank
           jmp forever
 
@@ -36,7 +40,9 @@ forever   jsr swap_scr
           icl 'dli.asm'
           icl 'fly.asm'
           icl 'frog.asm'
+          icl 'game.asm'
           icl 'object.asm'
+          icl 'score.asm'
           icl 'screen.asm'
           icl 'state.asm'
           icl 'tongue.asm'

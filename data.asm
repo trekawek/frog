@@ -86,7 +86,7 @@ fly_r_2   dta b($18),b($9a),b($19) // 17
 tongue_shape equ *
           dta b(%00011000)
           dta b(%00010000)
-          dta b(%0001100)
+          dta b(%00011000)
           dta b(%00001000)
           dta b(%00011000)
           dta b(%00010000)

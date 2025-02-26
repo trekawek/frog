@@ -7,9 +7,22 @@ init_tng  lda tngue_act
           seq
           rts
 
+          lda tongues
+          sne
+          rts
+
+          dec tongues
+          sed
+          lda tongues_bcd
+          sec
+          sbc #1
+          sta tongues_bcd
+          cld
+          inc score_dirty
+
           lda #1
           sta tngue_act
-          ldx #$d0
+          ldx #(frog_posy+5)*8
           stx tngue_pos
           rts
 
@@ -81,7 +94,7 @@ draw_tng_down equ *
           sta player1_buf,x
           stx tngue_pos
           txa
-          cmp #$d0
+          cmp #(frog_posy+5)*8
           beq tng_act_stop
           lda #%00111111
           sta missl_buf,x
@@ -159,6 +172,17 @@ detect_fly lda $93
 
 found_fly ldx #2
           jsr set_flag
+          sed
+          clc
+          lda score
+          adc #$10
+          sta score
+          lda score+1
+          adc #0
+          sta score+1
+          cld
+          inc score_dirty
+          dec remaining_flies
           jmp tng_act_down
 
 // updates the object to avoid running into tongue

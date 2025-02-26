@@ -11,9 +11,6 @@ init_scr  equ *
           lda #$c0    // enable dli
           sta nmien
 
-          lda #>chrst // set charset
-          sta chbas
-
           lda #$0e    // set background
           sta colbaks
 

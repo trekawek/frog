@@ -8,7 +8,6 @@ colpm0s   equ $02c0
 colpm1s   equ $02c1
 colpm2s   equ $02c2
 colpm3s   equ $02c3
-chbas     equ $02f4
 colpf0s   equ $02c4
 colpf1s   equ $02c5
 colpf2s   equ $02c6
@@ -37,6 +36,7 @@ hitclr    equ $d01e
 
 porta     equ $d300
 pmbase    equ $d407
+chbase    equ $d409
 wsync     equ $d40a
 vcount    equ $d40b
 nmien     equ $d40e
