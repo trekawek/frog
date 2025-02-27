@@ -18,6 +18,7 @@
 // init
 init      jsr init_scr
           jsr init_game
+          jsr init_music
 
 // main loop
 forever   jsr swap_scr
@@ -33,6 +34,7 @@ forever   jsr swap_scr
           jsr update_tng_char_pos
           jsr is_next_level
           jsr is_game_over
+          jsr play_music
           jsr wait_vblank
           jmp forever
 
@@ -41,9 +43,14 @@ forever   jsr swap_scr
           icl 'fly.asm'
           icl 'frog.asm'
           icl 'game.asm'
+          icl 'music.asm'
           icl 'object.asm'
           icl 'score.asm'
           icl 'screen.asm'
           icl 'state.asm'
           icl 'tongue.asm'
           icl 'wasp.asm'
+
+          opt h-
+          ins 'frog.cmc'
+          ins 'player.obj'

@@ -11,6 +11,10 @@ init_tng  lda tngue_act
           sne
           rts
 
+          ldx #$10
+          ldy #$2
+          jsr play_sound
+
           dec tongues
           sed
           lda tongues_bcd
@@ -151,7 +155,7 @@ detect_coll equ *
 detect_fly lda $93
           cmp $92
           sne
-          jmp tng_act_down
+          jmp hit_wasp
           ldy #0
           lda ($90),y
           sta $80
@@ -170,7 +174,12 @@ detect_fly lda $93
           inc $93
           jmp detect_fly
 
-found_fly ldx #2
+found_fly equ *
+          ldx #$10
+          ldy #$3
+          jsr play_sound
+
+          ldx #2
           jsr set_flag
           sed
           clc
@@ -184,6 +193,12 @@ found_fly ldx #2
           inc score_dirty
           dec remaining_flies
           jmp tng_act_down
+
+hit_wasp  equ *
+          ldx #$10
+          ldy #$4
+          jsr play_sound
+          jsr tng_act_down
 
 // updates the object to avoid running into tongue
 avoid_tng equ *
