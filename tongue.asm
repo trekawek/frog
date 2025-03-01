@@ -144,6 +144,11 @@ detect_coll equ *
           lda #1
           sta hitclr     // clear hit
 
+          lda dlist_stage // skip if the upper part of the screen is being processed
+          cmp #2
+          spl
+          rts
+
           lda tngue_act  // skip if there's no tongue
           cmp #1
           seq

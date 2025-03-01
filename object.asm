@@ -137,7 +137,8 @@ _obj_coll_lp lda ($80),y
           spl
           jmp rts_false
 
-          sbc $85
+          sec
+          sbc $85  // missle > obj + height <=> missle - height > obj
           cmp $83
           smi
           jmp rts_false

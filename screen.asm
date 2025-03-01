@@ -26,7 +26,7 @@ init_scr  equ *
           lda #50
           sta hposm0
           sta hposp1
-          lda #$38
+          lda #$c8
           sta colpm0s
           lda #$34
           sta colpm1s
