@@ -47,10 +47,12 @@ init_game equ *
           sta fly_9_obj+6
           sta frog_obj+6
           sta wasp_obj+6
-
           rts
 
 is_next_level equ *
+          lda tngue_act
+          seq
+          rts
           lda remaining_flies
           seq
           rts
