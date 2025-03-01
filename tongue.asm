@@ -31,7 +31,8 @@ init_tng  lda tngue_act
           rts
 
 // draw tongue
-draw_tng  lda tngue_act
+draw_tng  equ *
+          lda tngue_act
           cmp #1
           beq draw_tng_up
           cmp #2
@@ -61,6 +62,9 @@ draw_tng_up equ *
           ldx tngue_pos
           lda #0
           sta missl_buf,x
+          inx
+          sta missl_buf,x
+          dex
           dex
           dex
           dex
@@ -71,16 +75,18 @@ draw_tng_up equ *
           beq tng_act_down
           lda #%00111111
           sta missl_buf,x
+          inx
+          sta missl_buf,x
 
           lda frog_obj
-          rol
-          rol
-          clc
-          adc #$33
-          sta hposm0
+          asl
+          asl
           sec
-          sbc #3
+          adc #$31
           sta hposp1
+          clc
+          adc #3
+          sta hposm0
           rts
 
 draw_tng_down equ *
@@ -89,6 +95,7 @@ draw_tng_down equ *
           sta player1_buf,x
           sta missl_buf,x
           inx
+          sta missl_buf,x
           sta player1_buf,x
           inx
           sta player1_buf,x
@@ -114,6 +121,9 @@ tng_act_down  lda #2
 
 update_tng_char_pos equ * // 28-35 -> 0, 44-51 -> 2
                           // tngue_char_pos = (tngue_pos - 28) / 8
+          lda tngue_act
+          sne
+          rts
           lda tngue_pos
           sec
           sbc #28
