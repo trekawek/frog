@@ -54,6 +54,8 @@ is_next_level equ *
           lda remaining_flies
           seq
           rts
+          ldx #1
+          jsr play_song
           jmp init_game
 
 is_game_over equ *
@@ -66,4 +68,6 @@ is_game_over equ *
           lda #0
           sta score
           sta score+1
+          ldx #2
+          jsr play_song
           jmp init_game

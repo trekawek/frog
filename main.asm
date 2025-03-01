@@ -34,7 +34,7 @@ forever   jsr swap_scr
           jsr update_tng_char_pos
           jsr is_next_level
           jsr is_game_over
-          jsr play_music
+          jsr next_sound
           jsr wait_vblank
           jmp forever
 

@@ -26,10 +26,16 @@ stick_l   lda frog_obj
           cmp #scr_minx
           seq
           dec frog_obj
+          ldx #$10
+          ldy #$5
+          jsr play_sound
           rts
 
 stick_r   lda frog_obj
           cmp #scr_maxx-3
           seq
           inc frog_obj
+          ldx #$10
+          ldy #$5
+          jsr play_sound
           rts

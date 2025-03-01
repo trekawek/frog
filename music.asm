@@ -4,12 +4,16 @@ init_music   equ *
              lda #$70
              jsr player+3
              ldx #0
-             txa
-             jsr player+3
+             jsr play_song
              rts
 
-play_music   equ *
+next_sound   equ *
              jsr player+6
+             rts
+
+play_song    equ *
+             lda #0
+             jsr player+3
              rts
 
 play_sound   equ *
