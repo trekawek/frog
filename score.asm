@@ -13,22 +13,25 @@ print_score     equ *
           sta $89
 
           ldy #0
-          lda tongues_bcd
-          jsr print_2digits
-
-          tya
-          clc
-          adc #14
-          tay
-
           lda score+1
           jsr print_2digits
           lda score
           jsr print_2digits
 
+          lda $88
+          clc
+          adc #10
+          sta $88
+
+          lda #<msg_press_fire
+          sta $90
+          lda #>msg_press_fire
+          sta $91
+          jsr print_message
+
           rts
 
-print_2digits equ * 
+print_2digits equ *
           pha
           lsr
           lsr
@@ -45,3 +48,16 @@ print_2digits equ *
           sta ($88),y
           iny
           rts
+
+print_message equ *
+          ldy #0
+print_msg_loop lda ($90),y
+          cmp #$ff
+          sne
+          rts
+          sta ($88),y
+          iny
+          jmp print_msg_loop
+
+msg_press_fire dta d'PRESS FIRE',b($ff)
+

@@ -32,6 +32,7 @@ forever   equ *
           jsr draw_obj
           jsr draw_tng
           jsr print_score
+          jsr draw_tongue_ind
           jsr update_tng_char_pos
           jsr is_next_level
           jsr is_game_over
@@ -50,6 +51,7 @@ forever   equ *
           icl 'screen.asm'
           icl 'state.asm'
           icl 'tongue.asm'
+          icl 'tongue_ind.asm'
           icl 'wasp.asm'
 
           opt h-

@@ -29,12 +29,18 @@ dlicol3   cmp #$43
           jmp setcolors
 
 dlicol4   cmp #$67
-          bne enddli
+          bne dlicol5
           lda #$e0       // set default charset
           sta chbase
 
           lda #<colors4
           ldx #>colors4
+          jmp setcolors
+
+dlicol5   cmp #$63
+          bne enddli
+          lda #<colors5
+          ldx #>colors5
           jmp setcolors
 
 setcolors sta ldacolors+1
@@ -52,7 +58,8 @@ enddli    pla
           plp
           rti
 
-colors1   dta b($00),b($0c),b($0a),b($26),b($0e)
-colors2   dta b($1c),b($00),b($76),b($34),b($0e)
-colors3   dta b($b4),b($c8),b($00),b($46),b($0e)
-colors4   dta b($ff),b($ff),b($ff),b($ff),b($00)
+colors1   dta b($00),b($0c),b($0a),b($26),b($0e) // flies
+colors2   dta b($1c),b($00),b($76),b($34),b($0e) // wasp
+colors3   dta b($b4),b($c8),b($00),b($46),b($0e) // frog
+colors4   dta b($ff),b($ff),b($ff),b($ff),b($00) // score
+colors5   dta b($34),b($34),b($34),b($34),b($0e) // tongue

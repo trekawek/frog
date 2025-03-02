@@ -2,7 +2,7 @@
 dlist_start equ *
           dta b($f0)    // 3*8=24 empty lines
           dta b($70)    // 03
-          dta b($70)    // 07,  8 empty lines + DLI
+          dta b($70)    // 07
 
           dta b($44)    // 03 antic 4 + LMS
 dlist_lms dta a(scr_buf_1)
@@ -25,7 +25,7 @@ dlist_lms dta a(scr_buf_1)
           dta b($04)    // 57
           dta b($04)    // 5b
           dta b($04)    // 5f
-          dta b($04)    // 63
+          dta b($84)    // 63
           dta b($84)    // 67 antic 4 + DLI
           dta b($04)    // 6b
           dta b($07)    // 6b
