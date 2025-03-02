@@ -21,7 +21,8 @@ init      jsr init_scr
           jsr init_music
 
 // main loop
-forever   jsr swap_scr
+forever   equ *
+          jsr swap_scr
           jsr detect_coll
           jsr init_tng
           jsr move_frog

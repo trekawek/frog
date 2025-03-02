@@ -8,8 +8,6 @@ dli       php
 
           cmp #$07
           bne dlicol2
-          lda #1
-          sta dlist_stage
 
           lda #>chrst // set charset
           sta chbase
@@ -20,16 +18,12 @@ dli       php
 
 dlicol2   cmp #$23
           bne dlicol3
-          lda #2
-          sta dlist_stage
           lda #<colors2
           ldx #>colors2
           jmp setcolors
 
 dlicol3   cmp #$43
           bne dlicol4
-          lda #3
-          sta dlist_stage
           lda #<colors3
           ldx #>colors3
           jmp setcolors

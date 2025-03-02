@@ -137,18 +137,14 @@ update_tng_char_pos equ * // 28-35 -> 0, 44-51 -> 2
           rts
 
 // handle collision with tongue
-detect_coll equ *
+//detect_coll equ *
           lda m0pf       // skip if no collision
           sne
           rts
           lda #1
           sta hitclr     // clear hit
 
-          lda dlist_stage // skip if the upper part of the screen is being processed
-          cmp #2
-          spl
-          rts
-
+detect_coll equ *
           lda tngue_act  // skip if there's no tongue
           cmp #1
           seq
@@ -158,6 +154,13 @@ detect_coll equ *
           cmp #wasp_posy+3   // ignore collisions below wasp
           smi
           rts
+
+          lda #<wasp_obj
+          sta $80
+          lda #>wasp_obj
+          sta $81
+          jsr is_obj_collision
+          beq hit_wasp
 
           lda #flies_c   // find collision
           sta $92        // all objects
@@ -170,7 +173,7 @@ detect_coll equ *
 detect_fly lda $93
           cmp $92
           sne
-          jmp hit_wasp
+          rts
           ldy #0
           lda ($90),y
           sta $80
