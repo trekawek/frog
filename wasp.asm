@@ -1,13 +1,15 @@
 
 // move wasp
-move_wasp dec wsp_del
-          seq
-          rts
+move_wasp equ *
+          dec wsp_del
+          bne do_move_wasp
           lda #4
           sta wsp_del
+          rts
 
-          lda wasp_obj
-          cmp frog_obj
+do_move_wasp equ *
+          lda wsp_posx
+          cmp frog_posx
           sne
           rts
 
@@ -17,21 +19,24 @@ move_wasp dec wsp_del
           sta $81
 
           bcs move_wasp_l
-          inc wasp_obj
+          inc wsp_posx
+          
           lda #<wasp_r
           sta wasp_obj+4
           lda #>wasp_r
           sta wasp_obj+5
           jmp wasp_end
 
-move_wasp_l dec wasp_obj
+move_wasp_l dec wsp_posx
           lda #<wasp_l
           sta wasp_obj+4
           lda #>wasp_l
           sta wasp_obj+5
 
-wasp_end  lda wasp_obj
-          cmp #scr_maxx-2
-          sne
-          dec wasp_obj
+wasp_end  equ *
+          lda wsp_posx
+          lsr
+          lsr
+          sta wasp_obj
+
           jmp avoid_tng

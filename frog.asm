@@ -29,7 +29,7 @@ stick_l   lda frog_obj
           ldx #$10
           ldy #$5
           jsr play_sound
-          rts
+          jmp update_frog_posx
 
 stick_r   lda frog_obj
           cmp #scr_maxx-3
@@ -38,4 +38,11 @@ stick_r   lda frog_obj
           ldx #$10
           ldy #$5
           jsr play_sound
+          jmp update_frog_posx
+
+update_frog_posx equ *
+          lda frog_obj
+          asl
+          asl
+          sta frog_posx
           rts

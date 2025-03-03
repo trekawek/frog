@@ -137,13 +137,6 @@ update_tng_char_pos equ * // 28-35 -> 0, 44-51 -> 2
           rts
 
 // handle collision with tongue
-//detect_coll equ *
-          lda m0pf       // skip if no collision
-          sne
-          rts
-          lda #1
-          sta hitclr     // clear hit
-
 detect_coll equ *
           lda tngue_act  // skip if there's no tongue
           cmp #1
