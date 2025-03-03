@@ -25,7 +25,7 @@ do_move_wasp equ *
           sta wasp_obj+4
           lda #>wasp_r
           sta wasp_obj+5
-          jmp wasp_end
+          jmp waps_avoid_tng
 
 move_wasp_l dec wsp_posx
           lda #<wasp_l
@@ -33,10 +33,39 @@ move_wasp_l dec wsp_posx
           lda #>wasp_l
           sta wasp_obj+5
 
+waps_avoid_tng equ *
+          lda tngue_act
+          beq wasp_end
+
+          lda tngue_char_pos
+          ldy #1
+          sec
+          sbc wasp_obj+1
+          sbc wasp_obj+3
+          bpl wasp_end
+
+          lda frog_posx
+          clc
+          adc #5
+          sec
+          sbc wsp_posx
+          cmp #$0b
+          beq wasp_avoid_tng_left
+          cmp #$ff // -1
+          beq wasp_avoid_tng_right
+          jmp wasp_end
+
+wasp_avoid_tng_left equ *
+          dec wsp_posx
+          jmp wasp_end
+
+wasp_avoid_tng_right equ *
+          inc wsp_posx
+          jmp wasp_end
+
 wasp_end  equ *
           lda wsp_posx
           lsr
           lsr
           sta wasp_obj
-
-          jmp avoid_tng
+          rts
