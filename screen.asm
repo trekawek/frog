@@ -75,10 +75,20 @@ wait_vblank lda 20 // wait for vblank
           stx dlist_lms_3+1
           stx dlist_lms_4+1
           stx dlist_lms_5+1
+          inx
+          stx dlist_lms_6+1
+          stx dlist_lms_7+1
+          stx dlist_lms_8+1
+          inx
+          stx dlist_lms_9+1
 
           lda wsp_posx
           and #%11
           sta wsp_hscrol
+
+          lda frog_posx
+          and #%11
+          sta frog_hscrol
           rts
 
 // clean screen

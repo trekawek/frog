@@ -26,6 +26,8 @@ dlicol2   cmp #$2b
 
 dlicol3   cmp #$43
           bne dlicol4
+          lda frog_hscrol
+          sta hscrol
           lda #<colors3
           ldx #>colors3
           jmp setcolors

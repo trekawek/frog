@@ -46,7 +46,7 @@ waps_avoid_tng equ *
 
           lda frog_posx
           clc
-          adc #5
+          adc #4
           sec
           sbc wsp_posx
           cmp #$0b

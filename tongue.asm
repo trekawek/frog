@@ -78,11 +78,8 @@ draw_tng_up equ *
           inx
           sta missl_buf,x
 
-          lda frog_obj
-          asl
-          asl
-          sec
-          adc #$31
+          lda frog_posx
+          adc #$30
           sta hposp1
           clc
           adc #3

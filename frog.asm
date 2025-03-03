@@ -1,10 +1,6 @@
 
 // move frog
-move_frog dec frg_del
-          seq
-          rts
-          lda #2
-          sta frg_del
+move_frog equ *
 
           lda tngue_act
           seq
@@ -22,27 +18,23 @@ move_frog dec frg_del
           bne stick_r
           rts
 
-stick_l   lda frog_obj
-          cmp #scr_minx
-          seq
-          dec frog_obj
-          ldx #$10
-          ldy #$5
-          jsr play_sound
+stick_l   lda frog_posx
+          cmp #scr_minx*4
+          beq update_frog_posx
+          dec frog_posx
+          dec frog_posx
           jmp update_frog_posx
 
-stick_r   lda frog_obj
-          cmp #scr_maxx-3
-          seq
-          inc frog_obj
-          ldx #$10
-          ldy #$5
-          jsr play_sound
+stick_r   lda frog_posx
+          cmp #scr_maxx*4-12
+          beq update_frog_posx
+          inc frog_posx
+          inc frog_posx
           jmp update_frog_posx
 
 update_frog_posx equ *
-          lda frog_obj
-          asl
-          asl
-          sta frog_posx
+          lda frog_posx
+          lsr
+          lsr
+          sta frog_obj
           rts
