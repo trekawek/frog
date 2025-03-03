@@ -11,6 +11,10 @@ init_game equ *
           sta frog_obj
           sta wasp_obj
 
+          lda #scr_minx*4
+          sta frog_posx
+          sta wsp_posx
+
           lda #scr_minx+5
           sta fly_2_obj
 
