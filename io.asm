@@ -33,6 +33,7 @@ colpf3    equ $d019
 colbak    equ $d01a
 pmctl     equ $d01d
 hitclr    equ $d01e
+hscrol    equ $d404
 
 porta     equ $d300
 pmbase    equ $d407

@@ -3,7 +3,7 @@
 move_wasp dec wsp_del
           seq
           rts
-          lda #6
+          lda #4
           sta wsp_del
 
           lda wasp_obj

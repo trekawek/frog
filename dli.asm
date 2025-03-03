@@ -16,8 +16,10 @@ dli       php
           ldx #>colors1
           jmp setcolors
 
-dlicol2   cmp #$23
+dlicol2   cmp #$2b
           bne dlicol3
+          lda wsp_hscrol
+          sta hscrol
           lda #<colors2
           ldx #>colors2
           jmp setcolors

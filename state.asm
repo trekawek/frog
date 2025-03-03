@@ -12,3 +12,5 @@ tongues     dta b(0)
 tongues_bcd dta b(0)
 score_dirty dta b(1)
 remaining_flies dta b(0)
+
+wsp_hscrol  dta b(0)

@@ -68,8 +68,13 @@ draw_obj_loop lda $93
 wait_vblank lda 20 // wait for vblank
           cmp 20
           beq *-2
-          lda scr_buf+1 // update LMS in dlist
-          sta dlist_lms+1
+          ldx scr_buf+1 // update LMS in dlist
+          stx dlist_lms_1+1
+          inx
+          stx dlist_lms_2+1
+          stx dlist_lms_3+1
+          stx dlist_lms_4+1
+          stx dlist_lms_5+1
           rts
 
 // clean screen

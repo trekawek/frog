@@ -28,7 +28,6 @@ print_score     equ *
           lda #>msg_press_fire
           sta $91
           jsr print_message
-
           rts
 
 print_2digits equ *
