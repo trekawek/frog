@@ -69,7 +69,10 @@ wait_vblank lda 20 // wait for vblank
           cmp 20
           beq *-2
           ldx scr_buf+1 // update LMS in dlist
-          stx dlist_lms_1+1
+          stx dlist_lms_1a+1
+          stx dlist_lms_1b+1
+          stx dlist_lms_1c+1
+          stx dlist_lms_1d+1
           inx
           stx dlist_lms_2+1
           stx dlist_lms_3+1

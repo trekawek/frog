@@ -14,19 +14,24 @@ _blank2  equ $20
 _blank1  equ $10
 
 dlist_start equ *
-            dta b(_blank7 + _dli)    // 3*8=24 empty lines
-            dta b(_blank7)    // 03
-            dta b(_blank7)    // 07
+            dta b(_blank7 + _dli)          // 05
+            dta b(_blank7)                 // 03
+            dta b(_blank7)                 // 07
 
-            dta b($04 + _lms)    // 03 antic 4 + LMS
-dlist_lms_1 dta a(scr_buf_1+0)
-            dta b($04)           // 07
-            dta b($04)           // 1b
-            dta b($04)           // 1f
-            dta b($04)           // 23
-            dta b($04)           // 27
-            dta b($04 + _dli)    // 2b
-            dta b($04)           // 2f
+            dta b($04 + _hscroll + _lms + _dli)           // 13 antic 4 + LMS - flies 1
+dlist_lms_1a dta a(scr_buf_1-$0004)
+            dta b($04 + _lms)               // 17 - empty
+            dta a(scr_buf_1+$00c8)
+            dta b($04 + _hscroll + _lms + _dli)           // 1b - flies 2
+dlist_lms_1b dta a(scr_buf_1+$004c)
+            dta b($04 + _lms)               // 1f - empty
+            dta a(scr_buf_1+$00c8)
+            dta b($04 + _hscroll + _lms)           // 23 - flies 3
+dlist_lms_1c dta a(scr_buf_1+$009c)
+            dta b($04 + _lms)                      // 27
+dlist_lms_1d dta a(scr_buf_1+$00c8)
+            dta b($04 + _dli)                      // 2b
+            dta b($04)                             // 2f
             dta b($04 + _hscroll + _lms)    // 33 - wasp 1
 dlist_lms_2 dta a(scr_buf_1+$013c)
             dta b($04 + _hscroll + _lms)    // 37 - wasp 2

@@ -57,7 +57,7 @@ move_flies_posx equ *
 move_flies_right equ *
           inx
           txa
-          cmp #(scr_maxx-2*5-2)*4
+          cmp #(scr_maxx-2*5-2)*4-2
           seq
           rts
           dex

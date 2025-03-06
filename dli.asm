@@ -7,14 +7,26 @@ dli       php
           sta wsync
 
           cmp #$07
-          bne dlicol2
-
+          bne dlicol1b
           lda #>chrst // set charset
           sta chbase
-
+          lda flies1_hscrol
+          sta hscrol
           lda #<colors1
           ldx #>colors1
           jmp setcolors
+
+dlicol1b  cmp #$13
+          bne dlicol1c
+          lda flies2_hscrol
+          sta hscrol
+          jmp enddli
+
+dlicol1c  cmp #$1b
+          bne dlicol2
+          lda flies3_hscrol
+          sta hscrol
+          jmp enddli
 
 dlicol2   cmp #$2b
           bne dlicol3
@@ -36,7 +48,6 @@ dlicol4   cmp #$67
           bne dlicol5
           lda #$e0       // set default charset
           sta chbase
-
           lda #<colors4
           ldx #>colors4
           jmp setcolors
@@ -47,7 +58,8 @@ dlicol5   cmp #$63
           ldx #>colors5
           jmp setcolors
 
-setcolors sta ldacolors+1
+setcolors equ *
+          sta ldacolors+1
           stx ldacolors+2
           ldx #4
 
@@ -56,7 +68,8 @@ ldacolors lda $ffff,x
           dex
           bpl ldacolors
 
-enddli    pla
+enddli    equ *
+          pla
           tax
           pla
           plp
