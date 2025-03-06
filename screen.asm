@@ -89,6 +89,19 @@ wait_vblank lda 20 // wait for vblank
           lda frog_posx
           and #%11
           sta frog_hscrol
+
+          lda flies1_posx
+          and #%11
+          sta flies1_hscrol
+
+          lda flies2_posx
+          and #%11
+          sta flies2_hscrol
+
+          lda flies3_posx
+          and #%11
+          sta flies3_hscrol
+
           rts
 
 // clean screen

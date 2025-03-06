@@ -1,63 +1,121 @@
 // move flies
-move_flies dec fly_del
+move_flies equ *
+
+          lda #3
+          sta $92
+
+          ldx flies1_posx
+          ldy flies1_dir
+          jsr move_flies_posx
+          sty flies1_dir
+          stx flies1_posx
+
+          ldx flies2_posx
+          ldy flies2_dir
+          jsr move_flies_posx
+          sty flies2_dir
+          stx flies2_posx
+
+          ldx flies3_posx
+          ldy flies3_dir
+          jsr move_flies_posx
+          sty flies3_dir
+          stx flies3_posx
+
+          lda #<(flies_row_1)
+          sta $93
+          lda #>(flies_row_1)
+          sta $94
+          lda flies1_posx
+          sta $95
+          jsr move_flies_row
+
+          lda #<(flies_row_2)
+          sta $93
+          lda #>(flies_row_2)
+          sta $94
+          lda flies2_posx
+          sta $95
+          jsr move_flies_row
+
+          lda #<(flies_row_3)
+          sta $93
+          lda #>(flies_row_3)
+          sta $94
+          lda flies3_posx
+          sta $95
+          jsr move_flies_row
+          rts
+
+// x - posx
+// y - direction
+move_flies_posx equ *
+          tya
+          beq move_flies_right
+          jmp move_flies_left
+
+move_flies_right equ *
+          inx
+          txa
+          cmp #(scr_maxx-2*5-2)*4
           seq
           rts
-          lda #3
-          sta fly_del
+          dex
+          ldy #1
+          rts
 
-          lda #flies_c
-          sta $92          // all flies
+move_flies_left equ *
+          dex
+          txa
+          cmp #scr_minx*4
+          seq
+          rts
+          inx
+          ldy #0
+          rts
+
+// $92 - how many
+// $93,$94 - start of array pointing flies
+// $95 - pixel position of the row
+// $96 (tmp) - current fly
+move_flies_row equ *
           lda #0
-          sta $93          // current fly
-          lda #<(flies)
-          sta $94
-          lda #>(flies)
-          sta $95
-
-flies_loop lda $93
+          sta $96
+flies_loop lda $96
           cmp $92
           sne
           rts
-          rol
+          asl
           tay
-          lda ($94),y
+          lda ($93),y
           tax
           iny
-          lda ($94),y
+          lda ($93),y
           tay
           jsr move_fly
-          jsr avoid_tng
-          inc $93
+          inc $96
           jmp flies_loop
           rts
 
 // (x,y) - fly address
+// $95 - pixel position
+// $96 - current fly (c)
+// $97 - (tmp) char position
 move_fly  stx $80
           sty $81
-          ldx #1
-          jsr get_flag
-          beq move_fly_r
-
-move_fly_l ldy #$0
-          lda ($80),y
-          tax
-          dex
-          txa
+          ldy #0
+          lda $95
+          lsr
+          lsr
+          sta $97
+          
+          lda $96 // c*5 = c*4+c
+          asl
+          asl
+          clc
+          adc $96
+          clc
+          adc $97
           sta ($80),y
-          cmp #scr_minx
-          beq flip_fly
-          rts
 
-move_fly_r ldy #$0
-          lda ($80),y
-          tax
-          inx
-          txa
-          sta ($80),y
-          cmp #scr_maxx-3
-          beq flip_fly
-          rts
-
-flip_fly  ldx #1
-          jsr flip_flag
           rts

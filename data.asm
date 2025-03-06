@@ -1,15 +1,15 @@
 
-objects   dta a(frog_obj)
-          dta a(wasp_obj)
-flies     dta a(fly_1_obj)
-          dta a(fly_2_obj)
-          dta a(fly_3_obj)
-          dta a(fly_4_obj)
-          dta a(fly_5_obj)
-          dta a(fly_6_obj)
-          dta a(fly_7_obj)
-          dta a(fly_8_obj)
-          dta a(fly_9_obj)
+objects     dta a(frog_obj)
+            dta a(wasp_obj)
+flies_row_1 dta a(fly_1_obj)
+            dta a(fly_2_obj)
+            dta a(fly_3_obj)
+flies_row_2 dta a(fly_4_obj)
+            dta a(fly_5_obj)
+            dta a(fly_6_obj)
+flies_row_3 dta a(fly_7_obj)
+            dta a(fly_8_obj)
+            dta a(fly_9_obj)
 
 frog_obj  dta b(scr_minx),b(frog_posy) // x, y position
           dta b(3),b(3)       // width, height

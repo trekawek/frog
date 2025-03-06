@@ -18,3 +18,13 @@ wsp_posx    dta b(scr_minx*4)
 
 frog_hscrol dta b(0)
 frog_posx   dta b(scr_minx*4)
+
+flies1_posx dta b([scr_minx+0]*4)
+flies2_posx dta b([scr_minx+5]*4)
+flies3_posx dta b([scr_minx+10]*4)
+flies1_hscrol dta b(0)
+flies2_hscrol dta b(0)
+flies3_hscrol dta b(0)
+flies1_dir  dta b(0) // 0 -> right, 1 -> left
+flies2_dir  dta b(0)
+flies3_dir  dta b(0)

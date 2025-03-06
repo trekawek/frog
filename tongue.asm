@@ -156,9 +156,9 @@ detect_coll equ *
           sta $92        // all objects
           lda #0
           sta $93        // current object
-          lda #<(flies)
+          lda #<(flies_row_1)
           sta $90
-          lda #>(flies)
+          lda #>(flies_row_1)
           sta $91
 detect_fly lda $93
           cmp $92
