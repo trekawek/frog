@@ -15,29 +15,14 @@ init_game equ *
           sta frog_posx
           sta wsp_posx
 
-          lda #scr_minx+5
-          sta fly_2_obj
+          lda #[scr_minx+0]*4
+          sta flies1_posx
 
-          lda #scr_minx+10
-          sta fly_3_obj
+          lda #[scr_minx+5]*4
+          sta flies2_posx
 
-          lda #scr_minx+2
-          sta fly_4_obj
-
-          lda #scr_minx+7
-          sta fly_5_obj
-
-          lda #scr_minx+12
-          sta fly_6_obj
-
-          lda #scr_minx+5
-          sta fly_7_obj
-
-          lda #scr_minx+10
-          sta fly_8_obj
-
-          lda #scr_minx+15
-          sta fly_9_obj
+          lda #[scr_minx+10]*4
+          sta flies3_posx
 
           lda #0
           sta fly_1_obj+6
@@ -51,6 +36,9 @@ init_game equ *
           sta fly_9_obj+6
           sta frog_obj+6
           sta wasp_obj+6
+          sta flies1_dir
+          sta flies2_dir
+          sta flies3_dir
           rts
 
 is_next_level equ *
