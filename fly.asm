@@ -105,7 +105,7 @@ flies_loop lda $96
 // (x,y) - fly address
 // $95 - pixel position
 // $96 - current fly (c)
-// $97 - (tmp) char position
+// $97 - fly pixel position (tmp)
 move_fly  stx $80
           sty $81
           ldx #%10
@@ -129,9 +129,10 @@ move_fly  stx $80
           asl
           clc
           adc $97
+          ldy #7
+          sta ($80),y
           lsr
           lsr
-
           ldy #0
           sta ($80),y
 
@@ -151,7 +152,7 @@ find_flies_min_max equ *
 find_flies_min_max_loop lda $96
           cmp $92
           sne
-          jmp translate_to_pixels
+          rts
           asl
           tay
           lda ($93),y
@@ -163,17 +164,6 @@ find_flies_min_max_loop lda $96
           inc $96
           jmp find_flies_min_max_loop
 
-translate_to_pixels equ *
-          lda $97
-          asl
-          asl
-          sta $97
-          lda $98
-          asl
-          asl
-          sta $98
-          rts
-
 find_flies_min_max_iteration equ *
           stx $80
           sty $81
@@ -182,7 +172,7 @@ find_flies_min_max_iteration equ *
           seq
           rts
 
-          ldy #0
+          ldy #7
           lda ($80),y
           sta $98
           

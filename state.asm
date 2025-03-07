@@ -14,10 +14,7 @@ score_dirty dta b(1)
 remaining_flies dta b(0)
 
 wsp_hscrol  dta b(0)
-wsp_posx    dta b(scr_minx*4)
-
 frog_hscrol dta b(0)
-frog_posx   dta b(scr_minx*4)
 
 flies1_posx dta b([scr_minx+0]*4)
 flies2_posx dta b([scr_minx+5]*4)

@@ -15,56 +15,67 @@ frog_obj  dta b(scr_minx),b(frog_posy) // x, y position
           dta b(3),b(3)       // width, height
           dta a(frog)         // tiles
           dta b(0)            // flags
+frog_posx dta b(scr_minx*4)
 
 wasp_obj  dta b(scr_minx),b(wasp_posy)      // x, y position
           dta b(3),b(3)       // width, height
           dta a(wasp_r)       // tiles
           dta b(0)            // flags
+wsp_posx  dta b(scr_minx*4)
 
 fly_1_obj dta b(scr_minx),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)            // bit 0 - direction, bit 1 - hidden
+          dta b(0)            // pixel x position
 
 fly_2_obj dta b(scr_minx+5),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_3_obj dta b(scr_minx+10),b(flies1_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_4_obj dta b(scr_minx+2),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_5_obj dta b(scr_minx+7),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_6_obj dta b(scr_minx+12),b(flies2_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_7_obj dta b(scr_minx+5),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_8_obj dta b(scr_minx+10),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 fly_9_obj dta b(scr_minx+15),b(flies3_posy)
           dta b(3),b(1)
           dta a(fly_l_1)
           dta b(0)
+          dta b(0)            // pixel x position
 
 frog      dta b($01),b($02),b($03)
           dta b($04),b($05),b($06)
