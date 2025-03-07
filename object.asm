@@ -105,30 +105,49 @@ _draw_finished rts
 
 // check if object with ($80) address collides with missile
 //   $80, $81 - obj address
-//   $82, $83 - position on screen
-//   $84, $85 - width, height
+//   $82 - x (pixels)
+//   $83 - y (char)
+//   $84 - width (pixels)
+//   $85 - height (chars)
 //   $90 - missile height
 is_obj_collision equ *
           ldx #2       // skip hidden objects
           jsr get_flag
           bne rts_false
 
-          ldy #4 // copy object attributes to zero page
-_obj_coll_lp lda ($80),y
-          sta $82,y
-          dey
-          bpl _obj_coll_lp
+          ldy #7
+          lda ($80),y
+          sta $82
 
-          ldx frog_obj // check x position of the missile == frog+1
-          inx
-          txa
-          cmp $82  // missle < obj -> return
+          ldy #1
+          lda ($80),y
+          sta $83
+
+          iny // ldy #2
+          lda ($80),y
+          asl
+          asl
+          sta $84
+
+          iny // ldy #3
+          lda ($80),y
+          sta $85
+
+          lda frog_posx // check x position of the missile == frog+1
+          clc
+          adc #6
+          sec
+          sbc $82  // tongue < obj -> return
           spl
           jmp rts_false
 
+          lda frog_posx // check x position of the missile == frog+1
+          clc
+          adc #6
           sec
           sbc $84  // missle > obj + width <=> missile - width > obj -> return
-          cmp $82
+          sec
+          sbc $82
           smi
           jmp rts_false
 
