@@ -16,6 +16,7 @@ move_flies equ *
           jsr move_flies_posx
           sty flies1_dir
           stx flies1_posx
+          sty $99
 
           lda flies1_posx
           sta $95
@@ -33,6 +34,7 @@ move_flies equ *
           jsr move_flies_posx
           sty flies2_dir
           stx flies2_posx
+          sty $99
 
           lda flies2_posx
           sta $95
@@ -50,6 +52,7 @@ move_flies equ *
           jsr move_flies_posx
           sty flies3_dir
           stx flies3_posx
+          sty $99
 
           lda flies3_posx
           sta $95
@@ -83,6 +86,7 @@ move_flies_posx equ *
 // $93,$94 - start of array pointing flies
 // $95 - pixel position of the row
 // $96 (tmp) - current fly
+// $99 - direction
 move_flies_row equ *
           lda #0
           sta $96
@@ -97,17 +101,19 @@ flies_loop lda $96
           iny
           lda ($93),y
           tay
+          stx $80
+          sty $81
           jsr move_fly
+          jsr update_fly_tiles
           inc $96
           jmp flies_loop
           rts
 
-// (x,y) - fly address
+// ($80) - fly address
 // $95 - pixel position
 // $96 - current fly (c)
 // $97 - fly pixel position (tmp)
-move_fly  stx $80
-          sty $81
+move_fly  equ *
           ldx #%10
           jsr get_flag
           seq
@@ -136,6 +142,50 @@ move_fly  stx $80
           ldy #0
           sta ($80),y
 
+          rts
+
+// ($80) - fly
+// ($99) - direction
+// ($a0,$a1) - tiles (tmp)
+update_fly_tiles equ *
+          lda random
+          ldx #%0100
+          and #%1111
+          cmp #%0001
+          sne
+          jsr flip_flag
+
+          lda #<fly_l_1
+          sta $a0
+          lda #>fly_l_1
+          sta $a1
+
+          lda $99
+          bne _update_fly_anim
+          lda #6
+          clc
+          adc $a0
+          sta $a0
+          scc
+          inc $a1
+
+_update_fly_anim equ *
+          jsr get_flag
+          bne _write_fly_tiles
+          lda #3
+          clc
+          adc $a0
+          sta $a0
+          scc
+          inc $a1
+
+_write_fly_tiles equ *
+          ldy #4
+          lda $a0
+          sta ($80),y
+          iny
+          lda $a1
+          sta ($80),y
           rts
 
 // $92 - how many

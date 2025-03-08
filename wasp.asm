@@ -1,6 +1,12 @@
 
 // move wasp
 move_wasp equ *
+          lda #<wasp_obj
+          sta $80
+          lda #>wasp_obj
+          sta $81
+
+          jsr update_wasp_tiles
           dec wsp_del
           bne do_move_wasp
           lda #4
@@ -13,25 +19,16 @@ do_move_wasp equ *
           sne
           rts
 
-          lda #<wasp_obj
-          sta $80
-          lda #>wasp_obj
-          sta $81
-
           bcs move_wasp_l
           inc wsp_posx
-          
-          lda #<wasp_r
-          sta wasp_obj+4
-          lda #>wasp_r
-          sta wasp_obj+5
+
+          lda #0
+          sta wsp_dir
           jmp waps_avoid_tng
 
 move_wasp_l dec wsp_posx
-          lda #<wasp_l
-          sta wasp_obj+4
-          lda #>wasp_l
-          sta wasp_obj+5
+          lda #1
+          sta wsp_dir
 
 waps_avoid_tng equ *
           lda tngue_act
@@ -68,4 +65,43 @@ wasp_end  equ *
           lsr
           lsr
           sta wasp_obj
+          rts
+
+update_wasp_tiles equ *
+          lda random
+          ldx #%0100
+          and #%1111
+          cmp #%0001
+          sne
+          jsr flip_flag
+          
+          lda #<wasp_l
+          sta $a0
+          lda #>wasp_l
+          sta $a1
+
+          lda wsp_dir
+          bne _update_wasp_anim
+          lda #18
+          clc
+          adc $a0
+          sta $a0
+          scc
+          inc $a1
+
+_update_wasp_anim equ *
+          jsr get_flag
+          bne _write_wasp_tiles
+          lda #9
+          clc
+          adc $a0
+          sta $a0
+          scc
+          inc $a1
+
+_write_wasp_tiles equ *
+          lda $a0
+          sta wasp_obj+4
+          lda $a1
+          sta wasp_obj+5
           rts

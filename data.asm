@@ -85,7 +85,15 @@ wasp_l    dta b($2c),b($2b),b($2a)
           dta b($2f),b($2e),b($2d)
           dta b($00),b($31),b($30)
 
+wasp_l2   dta b($2c),b($33),b($32)
+          dta b($2f),b($2e),b($2d)
+          dta b($00),b($31),b($30)
+
 wasp_r    dta b($0a),b($0b),b($0c)
+          dta b($0d),b($0e),b($0f)
+          dta b($10),b($11),b($00)
+
+wasp_r2   dta b($12),b($13),b($0c)
           dta b($0d),b($0e),b($0f)
           dta b($10),b($11),b($00)
 

@@ -33,11 +33,12 @@ colpf3    equ $d019
 colbak    equ $d01a
 pmctl     equ $d01d
 hitclr    equ $d01e
-hscrol    equ $d404
-
+random    equ $d20a
 porta     equ $d300
+hscrol    equ $d404
 pmbase    equ $d407
 chbase    equ $d409
 wsync     equ $d40a
 vcount    equ $d40b
 nmien     equ $d40e
+
