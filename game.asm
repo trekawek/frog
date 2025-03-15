@@ -53,15 +53,45 @@ is_next_level equ *
           jmp init_game
 
 is_game_over equ *
+          lda game_state
+          and #$01
+          seq
+          rts
+
           lda tngue_act
           seq
           rts
           lda tongues
           seq
           rts
+          
+          ldx #2
+          jsr play_song
+          lda #$01
+          sta game_state
+          rts
+
+start_game equ *
+          lda game_state
+          and #$01
+          sne
+          rts
+
+          lda trig0
+          seq
+          rts
+
+          lda trig0
+          beq *-3
+
+          lda #$02 + $04
+          sta game_state
+
           lda #0
           sta score
           sta score+1
-          ldx #2
+
+          ldx #0
           jsr play_song
+
           jmp init_game

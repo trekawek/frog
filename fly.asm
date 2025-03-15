@@ -1,6 +1,11 @@
 // move flies
 move_flies equ *
 
+          lda game_state
+          and #$02
+          sne
+          rts
+
           lda #3
           sta $92
 

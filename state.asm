@@ -26,3 +26,8 @@ flies3_hscrol dta b(0)
 flies1_dir  dta b(0) // 0 -> right, 1 -> left
 flies2_dir  dta b(0)
 flies3_dir  dta b(0)
+
+// $01 - show "press fire"
+// $02 - move flies
+// $04 - move frog
+game_state  dta b($01)

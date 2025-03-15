@@ -23,6 +23,10 @@ print_score     equ *
           adc #10
           sta $88
 
+          lda game_state
+          and #$01
+          sne
+          rts
           lda #<msg_press_fire
           sta $90
           lda #>msg_press_fire

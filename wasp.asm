@@ -1,6 +1,12 @@
 
 // move wasp
 move_wasp equ *
+
+          lda game_state
+          and #$04
+          sne
+          rts
+
           lda #<wasp_obj
           sta $80
           lda #>wasp_obj

@@ -3,8 +3,6 @@ init_music   equ *
              ldy #>song
              lda #$70
              jsr player+3
-             ldx #0
-             jsr play_song
              rts
 
 next_sound   equ *

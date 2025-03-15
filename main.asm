@@ -22,6 +22,7 @@ init      jsr init_scr
 
 // main loop
 forever   equ *
+          jsr start_game
           jsr swap_scr
           jsr detect_coll
           jsr init_tng
