@@ -48,7 +48,25 @@ is_next_level equ *
           lda remaining_flies
           seq
           rts
+
+          lda tongues // 20 extra points for every remaining tongue
+          asl            // 20 = 16 + 4
+          asl
+          sta $80
+          asl
+          asl
+          clc
+          adc $80
+          sed
+          clc
+          adc score
+          lda score+1
+          adc #0
+          sta score+1
+          cld
+
           ldx #1
+          stx score_dirty
           jsr play_song
           jmp init_game
 
