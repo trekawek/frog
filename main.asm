@@ -25,11 +25,17 @@ forever   equ *
           jsr start_game
           jsr swap_scr
           jsr detect_coll
+
+          lda game_state
+          and #$01
+          bne post_moves
+
           jsr init_tng
           jsr move_frog
           jsr move_wasp
           jsr move_flies
-          jsr clean
+
+post_moves jsr clean
           jsr draw_obj
           jsr draw_tng
           jsr print_score

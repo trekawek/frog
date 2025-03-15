@@ -1,8 +1,5 @@
 
-init_tng  lda game_state
-          and #$04
-          sne
-          rts
+init_tng  equ *
 
           lda tngue_act
           seq

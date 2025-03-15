@@ -102,14 +102,10 @@ start_game equ *
           lda trig0
           beq *-3
 
-          lda #$02 + $04
-          sta game_state
-
-          lda #0
-          sta score
-          sta score+1
-
           ldx #0
+          stx score
+          stx score+1
+          stx game_state
           jsr play_song
 
           jmp init_game

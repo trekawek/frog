@@ -2,11 +2,6 @@
 // move frog
 move_frog equ *
 
-          lda game_state
-          and #$04
-          sne
-          rts
-
           lda tngue_act
           seq
           rts
