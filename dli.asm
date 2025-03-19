@@ -44,18 +44,24 @@ dlicol3   cmp #$43
           ldx #>colors3
           jmp setcolors
 
-dlicol4   cmp #$67
+dlicol4   cmp #$63
           bne dlicol5
-          lda #$e0       // set default charset
-          sta chbase
-          lda #<colors4
-          ldx #>colors4
-          jmp setcolors
-
-dlicol5   cmp #$63
-          bne enddli
           lda #<colors5
           ldx #>colors5
+          jmp setcolors
+
+dlicol5   cmp #$67
+          bne dlicol6
+          lda #$e0       // set default charset
+          sta chbase
+          jmp enddli
+
+dlicol6   cmp #$68
+          bne enddli
+          lda #1
+          sta wsync
+          lda #<colors4
+          ldx #>colors4
           jmp setcolors
 
 setcolors equ *

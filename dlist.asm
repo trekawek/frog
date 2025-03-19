@@ -53,13 +53,9 @@ dlist_lms_7 dta a(scr_buf_1+$02cc) // 2d0
 dlist_lms_8 dta a(scr_buf_1+$02f4) // 2f8
             dta b($04 + _dli + _lms)  // 63
 dlist_lms_9 dta a(scr_buf_1+$0320) // 320
-            dta b($04 + _dli)         // 67
+            dta b($04 + _dli)       // 67
+            dta b(_blank1 + _dli) // 68
             dta b($04)        // 6b
             dta b($07)        // 6b
-            dta b(_blank7)    // 73
-            dta b(_blank7)    // 73
-            dta b(_blank7)    // 77
-            dta b(_blank7)    // 7b
-            dta b(_blank7)    // 7f
 
             dta b(_jvb),a(dlist_start)
