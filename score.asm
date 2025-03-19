@@ -18,15 +18,30 @@ print_score     equ *
           lda score
           jsr print_2digits
 
+          lda game_state
+          and #$01
+          bne print_press_fire
+
+print_level equ *
+          lda $88
+          clc
+          adc #12
+          sta $88
+          lda #<msg_level
+          sta $90
+          lda #>msg_level
+          sta $91
+          jsr print_message
+          
+          lda level_bcd
+          jsr print_2digits
+          rts
+
+print_press_fire equ *
           lda $88
           clc
           adc #10
           sta $88
-
-          lda game_state
-          and #$01
-          sne
-          rts
           lda #<msg_press_fire
           sta $90
           lda #>msg_press_fire
@@ -64,3 +79,4 @@ print_msg_loop lda ($90),y
 
 msg_press_fire dta d'PRESS FIRE',b($ff)
 
+msg_level      dta d'LEVEL ',b($ff)

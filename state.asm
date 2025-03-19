@@ -9,7 +9,6 @@ tngue_char_pos dta b(frog_posy)
 
 score       dta b(0),b(0)
 tongues     dta b(0)
-tongues_bcd dta b(0)
 score_dirty dta b(1)
 remaining_flies dta b(0)
 
@@ -29,3 +28,5 @@ flies3_dir  dta b(0)
 
 // $01 - waiting for the fire
 game_state  dta b($01)
+level       dta b($00)
+level_bcd   dta b($00)

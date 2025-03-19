@@ -18,12 +18,6 @@ init_tng  equ *
           jsr play_sound
 
           dec tongues
-          sed
-          lda tongues_bcd
-          sec
-          sbc #1
-          sta tongues_bcd
-          cld
           inc score_dirty
 
           lda #1

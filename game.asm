@@ -1,8 +1,18 @@
-init_game equ *
-          lda #20
-          sta tongues
-          lda #$20
-          sta tongues_bcd
+init_level equ *
+
+          lda level
+          cmp #11
+          bpl _high_level
+
+_low_level   lda #20
+             sec
+             sbc level
+             jmp _set_tng
+
+_high_level  lda #9
+             jmp _set_tng
+
+_set_tng  sta tongues
           lda #flies_c
           sta remaining_flies
           
@@ -49,26 +59,38 @@ is_next_level equ *
           seq
           rts
 
-          lda tongues // 20 extra points for every remaining tongue
-          asl            // 20 = 16 + 4
-          asl
-          sta $80
-          asl
-          asl
+          lda tongues // 20 extra points for every remaining tongue or every level
           clc
-          adc $80
+          adc level
+          tax
           sed
+_tongue_score_loop beq _finish_tongues_score
+          lda #$20
           clc
           adc score
-          lda score+1
-          adc #0
+          sta score
+          lda #0
+          adc score+1
           sta score+1
-          cld
+          dex
+          jmp _tongue_score_loop
 
+_finish_tongues_score equ *
+          cld
           ldx #1
           stx score_dirty
           jsr play_song
-          jmp init_game
+
+          inc level
+
+          sed
+          lda level_bcd
+          clc
+          adc #$01
+          sta level_bcd
+          cld
+
+          jmp init_level
 
 is_game_over equ *
           lda game_state
@@ -102,10 +124,13 @@ start_game equ *
           lda trig0
           beq *-3
 
-          ldx #0
+          ldx #1
+          stx level_bcd
+          dex
+          stx level
           stx score
           stx score+1
           stx game_state
           jsr play_song
 
-          jmp init_game
+          jmp init_level

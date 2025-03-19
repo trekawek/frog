@@ -17,7 +17,7 @@
 
 // init
 init      jsr init_scr
-          jsr init_game
+          jsr init_level
           jsr init_music
 
 // main loop
